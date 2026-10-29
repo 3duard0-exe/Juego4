@@ -33,32 +33,34 @@ def draw():
     update()
 
 def move():
-    "Move ball and targets."
-    if randrange(40) == 0:
-        y = randrange(-150, 150)
-        target = vector(200, y)
-        targets.append(target)
+    """Mueve los elementos y mantiene la animación activa."""
+    # Asegura que haya un objetivo desde el inicio.
+    if not targets or randrange(40) == 0:
+        targets.append(vector(199, randrange(-150, 150)))
 
     for target in targets:
         target.x -= 2
+
+        # Los objetivos que salen reaparecen por la derecha.
+        if not inside(target):
+            target.x = 199
+            target.y = randrange(-150, 150)
 
     if inside(ball):
         speed.y -= 0.35
         ball.move(speed)
 
+    # Elimina objetivos alcanzados por un disparo activo.
     dupe = targets.copy()
     targets.clear()
 
     for target in dupe:
-        if abs(target - ball) > 13:
+        if not inside(ball) or abs(target - ball) > 13:
             targets.append(target)
 
     draw()
 
-    for target in targets:
-        if not inside(target):
-            return
-
+    # Programa siempre el siguiente movimiento.
     ontimer(move, 30)
 
 setup(420, 420, 370, 0)
